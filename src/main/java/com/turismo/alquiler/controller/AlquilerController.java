@@ -33,7 +33,7 @@ public class AlquilerController {
 
     @PostMapping("/{id}/finalizar")
     public ResponseEntity<AlquilerDTO> finalizar(@PathVariable Long id,
-                                                  @RequestBody @Valid FinalizarAlquilerRequest request) {
+        @RequestBody @Valid FinalizarAlquilerRequest request) {
         AlquilerDTO alquiler = alquilerService.finalizarAlquiler(id, request.getHoraFinReal());
         return ResponseEntity.ok(alquiler);
     }
