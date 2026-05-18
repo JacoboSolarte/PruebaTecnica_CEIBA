@@ -6,6 +6,45 @@ Sistema de gestión de alquiler de bicicletas urbanas desarrollado en **Java 17 
 
 ---
 
+## 🚀 Despliegue en producción
+
+La aplicación está desplegada y accesible públicamente:
+
+| Recurso | URL / Plataforma |
+|---|---|
+| **API en vivo (Azure)** | https://pruebatecnica-ddc6bzeudpdmdfdv.eastus-01.azurewebsites.net |
+| **Swagger UI** | https://pruebatecnica-ddc6bzeudpdmdfdv.eastus-01.azurewebsites.net/swagger-ui.html |
+| **OpenAPI JSON** | https://pruebatecnica-ddc6bzeudpdmdfdv.eastus-01.azurewebsites.net/v3/api-docs |
+| **Listar bicicletas** | https://pruebatecnica-ddc6bzeudpdmdfdv.eastus-01.azurewebsites.net/api/bicicletas |
+
+### Infraestructura
+
+- **API (Spring Boot)** → desplegada en **Microsoft Azure App Service** (Linux + Java 17, plan B1), con despliegue continuo desde **GitHub Actions**: cada push al repositorio dispara un build con Maven y publica el JAR automáticamente.
+- **Base de datos (MySQL 8)** → hospedada en **Railway**, accesible públicamente vía TLS. Las tablas se crean automáticamente con Hibernate (`ddl-auto=update`) y `data.sql` inserta las bicicletas iniciales de forma idempotente.
+
+```
+┌─────────────────────────┐
+│ GitHub (repositorio)    │
+│   └ código fuente       │
+└──────────┬──────────────┘
+           │ push
+           ▼
+┌─────────────────────────┐          ┌──────────────────────┐
+│ GitHub Actions          │ ─build──►│ Azure App Service    │
+│  (mvn package)          │ + JAR    │ Spring Boot + Java 17│
+└─────────────────────────┘          └──────────┬───────────┘
+                                                │ JDBC sobre TLS
+                                                ▼
+                                     ┌──────────────────────┐
+                                     │ Railway MySQL 8      │
+                                     │ ballast.proxy.rlwy   │
+                                     └──────────────────────┘
+```
+
+Las credenciales de la base de datos están externalizadas en **variables de entorno de Azure App Service** (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `SPRING_PROFILES_ACTIVE=prod`), por lo que **no viajan en el código fuente** del repositorio.
+
+---
+
 ## Tabla de contenidos
 
 1. [Requisitos previos](#1-requisitos-previos)
@@ -91,6 +130,8 @@ La aplicación quedará disponible en **http://localhost:8080**.
 Una vez levantada la aplicación, abre en el navegador:
 
 **http://localhost:8080/swagger-ui.html**
+
+**https://pruebatecnica-ddc6bzeudpdmdfdv.eastus-01.azurewebsites.net/swagger-ui/index.html#/**
 
 Desde Swagger UI puedes:
 - Ver todos los endpoints con sus esquemas (request/response)
