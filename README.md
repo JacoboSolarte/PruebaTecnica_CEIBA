@@ -6,7 +6,7 @@ Sistema de gestión de alquiler de bicicletas urbanas desarrollado en **Java 17 
 
 ---
 
-## 🚀 Despliegue en producción
+## Despliegue en producción
 
 La aplicación está desplegada y accesible públicamente:
 
